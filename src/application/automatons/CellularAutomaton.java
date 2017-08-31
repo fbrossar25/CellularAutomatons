@@ -3,7 +3,8 @@ package application.automatons;
 import application.helpers.BoolGrid;
 
 public abstract class CellularAutomaton {
-	protected BoolGrid grid;
+	protected BoolGrid currentGeneration;
+	protected BoolGrid nextGeneration;
 	protected int speed = 1;
 	protected boolean paused = false;
 	protected int generation = 0;
@@ -19,17 +20,21 @@ public abstract class CellularAutomaton {
 	public CellularAutomaton(int rows, int cols) {
 		if(rows < 1 || cols < 1)
 			throw new IllegalArgumentException("Invalid dimensions : ("+rows+","+cols+")");
-		this.grid = new BoolGrid(rows,cols);
+		this.currentGeneration = new BoolGrid(rows,cols);
+		this.nextGeneration = new BoolGrid(rows,cols);
 	}
 	
 	public void clear() {
-		this.grid.reset();
+		this.currentGeneration.reset();
+		this.nextGeneration.reset();
 		this.generation = 0;
 	}
 	
 	public void next() {
 		this.generation++;
 		nextStep();
+		this.currentGeneration.initWithOther(this.nextGeneration);
+		//this.nextGeneration.reset();
 	}
 	
 	protected abstract void nextStep();
@@ -65,33 +70,56 @@ public abstract class CellularAutomaton {
 	}
 	
 	public int rows() {
-		return this.grid.rows();
+		return this.currentGeneration.rows();
 	}
 	
 	public int cols() {
-		return this.grid.cols();
+		return this.currentGeneration.cols();
 	}
 	
 	public boolean isCellPopulated(int row, int col) {
-			return this.grid.get(row, col);
+		boolean b;
+		try {
+			b = this.currentGeneration.get(row, col);
+		}catch(IndexOutOfBoundsException e){
+			//ignoring e
+			b = false;
+		}
+		return b;
 	}
 	
-	public void setCell(int row, int col, boolean alive) throws IndexOutOfBoundsException{
-		if(!this.grid.isValidCell(row, col))
+	protected void setCell(BoolGrid grid, int row, int col, boolean alive) {
+		if(!grid.isValidCell(row, col))
 			throw new IndexOutOfBoundsException("Cell does not exists : ("+row+","+col+")");
-		this.grid.set(row, col, alive);
+		grid.set(row, col, alive);
+	}
+	
+	public void setCurrentGenCell(int row, int col, boolean alive) throws IndexOutOfBoundsException{
+		setCell(this.currentGeneration,row,col,alive);
+	}
+	
+	public void setNextGenCell(int row, int col, boolean alive)  throws IndexOutOfBoundsException{
+		setCell(this.nextGeneration,row,col,alive);
 	}
 	
 	public void randomizeCells() {
+		this.clear();
+		/*
 		for(int row=0; row<rows(); row++) {
 			for(int col=0; col<cols(); col++) {
-				setCell(row,col,Math.random() < 0.5);
+				setCurrentGenCell(row,col,Math.random() < 0.5);
 			}
 		}
+		*/
+		setCurrentGenCell(0,1,true);
+		setCurrentGenCell(1,0,true);
+		setCurrentGenCell(1,1,true);
+		setCurrentGenCell(1,2,true);
+		setCurrentGenCell(2,0,true);
 	}
 	
 	@Override
 	public String toString() {
-		return this.grid.toString();
+		return this.currentGeneration.toString();
 	}
 }
