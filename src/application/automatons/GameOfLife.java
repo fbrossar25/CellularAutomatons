@@ -21,45 +21,28 @@ public class GameOfLife extends CellularAutomaton{
 	public void nextStep() {
 		for(int row=0; row<rows(); row++) {
 			for(int col=0; col<cols(); col++) {
-				int neighbours = getAliveNeighbours(row,col);
-				if(isCellPopulated(row,col)) {
-					if(neighbours < 2)
-						setCell(row, col, false);
-					else if (neighbours > 3)
-						setCell(row,col,false);
-				}else {
-					if(neighbours == 3)
-						setCell(row,col,true);
-				}
+				int neighbors = getAliveNeighbors(row,col);
+				boolean populated = isCellPopulated(row,col);
+			    //System.out.println("Cell ("+row+","+col+") -> "+neighbors+" "+(populated ? "O" : "X"));
+				setNextGenCell(row, col, (neighbors == 3 || (populated && neighbors == 2)));
 			}
 		}
 	}
 	
-	public int getAliveNeighbours(int row, int col) {
-		//FIXME bad neighbours count
-		if(!grid.isValidCell(row, col))
+	public int getAliveNeighbors(int row, int col) {
+		if(!currentGeneration.isValidCell(row, col))
 			return 0;
-		int neighbours = 0;
-		System.out.println("Cell ("+row+","+col+") : ");
-		for(int i=row-1; i<=row+1; i++) {
-			for(int j=col-1; j<=col+1; j++) {
-				try {
-					if(i >= 0 && i < grid.rows() && j >= 0 && j < grid.cols()) {
-						if(!(i==row && j==col)) {
-							if(isCellPopulated(i,j)) {
-								System.out.println("\t("+i+","+j+") alive");
-								neighbours++;
-							}
-						}
-					}
-				}catch(IndexOutOfBoundsException e) {
-					//ignoring
-					System.err.println(e.getMessage());
-				}
-			}
-		}
-		System.out.println("\ttotal : "+neighbours);
-		return neighbours;
+		int neighbors = 0;
+        neighbors += isCellPopulated(row-1,col - 1) ? 1 : 0; //NW
+        neighbors += isCellPopulated(row-1,col) ? 1 : 0; //N
+        neighbors += isCellPopulated(row-1,col + 1) ? 1 : 0; //NE
+        neighbors += isCellPopulated(row,col - 1) ? 1 : 0; //W
+        //don't look at itself
+        neighbors += isCellPopulated(row,col + 1) ? 1 : 0; //E
+        neighbors += isCellPopulated(row + 1,col - 1) ? 1 : 0; //SW
+        neighbors += isCellPopulated(row + 1,col) ? 1 : 0; //S
+        neighbors += isCellPopulated(row + 1,col + 1) ? 1 : 0; //SE
+		return neighbors;
 	}
 
 }
