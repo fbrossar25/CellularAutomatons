@@ -2,18 +2,7 @@ package application.automatons;
 
 public class GameOfLife extends CellularAutomaton{
 	
-	public GameOfLife() {
-		super();
-		randomizeCells();
-	}
-	
-	public GameOfLife(int size) {
-		super(size,size);
-		randomizeCells();
-	}
-	
-	public GameOfLife(int rows, int cols) {
-		super(rows,cols);
+	protected void init() {
 		randomizeCells();
 	}
 	

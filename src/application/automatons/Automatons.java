@@ -1,7 +1,8 @@
 package application.automatons;
 
 public enum Automatons{
-	GAME_OF_LIFE("Conway's Game of Life");
+	GAME_OF_LIFE("Conway's Game of Life"),
+	LANGTONS_ANT("Langton's Ant");
 	
 	private final String display;
 	private Automatons(String s) {
@@ -12,6 +13,8 @@ public enum Automatons{
 		switch(this) {
 			case GAME_OF_LIFE:
 				return new GameOfLife();
+			case LANGTONS_ANT:
+				return new LangtonsAnt();
 			default:
 				return null;
 		}

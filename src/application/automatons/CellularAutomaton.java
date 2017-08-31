@@ -22,7 +22,10 @@ public abstract class CellularAutomaton {
 			throw new IllegalArgumentException("Invalid dimensions : ("+rows+","+cols+")");
 		this.currentGeneration = new BoolGrid(rows,cols);
 		this.nextGeneration = new BoolGrid(rows,cols);
+		init();
 	}
+	
+	protected abstract void init();
 	
 	public void clear() {
 		this.currentGeneration.reset();
@@ -31,8 +34,8 @@ public abstract class CellularAutomaton {
 	}
 	
 	public void next() {
-		this.generation++;
 		nextStep();
+		this.generation++;
 		this.currentGeneration.initWithOther(this.nextGeneration);
 		//this.nextGeneration.reset();
 	}
