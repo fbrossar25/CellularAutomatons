@@ -62,6 +62,16 @@ public class BoolGrid{
 		return this.cols;
 	}
 	
+	public void initWithOther(BoolGrid other) {
+		if(other.rows() != this.rows() || other.cols() != this.cols())
+			throw new IllegalArgumentException("BoolGrid dimension not equals : ("+this.rows+","+this.cols+") != "+"("+other.rows+","+other.cols+")");
+		for(int row=0; row<this.rows; row++) {
+			for(int col=0; col<this.cols(); col++) {
+				this.grid[row][col] = other.grid[row][col];
+			}
+		}
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("");
