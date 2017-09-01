@@ -16,19 +16,38 @@ public class Drawings {
 	public static void drawCellularAutomaton(Canvas canvas, CellularAutomaton automaton) {
 		if(canvas == null || automaton == null)
 			return;
-		int cellWidth = getCellWidth(canvas,automaton);
-		int cellHeight= getCellHeight(canvas,automaton);
-		//TODO draw cell grid
+		double x,y;
+		double cw = getCellWidth(canvas,automaton.cols());
+		double ch= getCellHeight(canvas,automaton.rows());
+		int rows = automaton.rows();
+		int cols = automaton.cols();
+		drawBackground(canvas);
+		GraphicsContext ctx = canvas.getGraphicsContext2D();
+		for(int row=0; row<rows; row++) {
+			y = row * ch;
+			for(int col=0; col<cols; col++) {
+				x = col * cw;
+				ctx.setFill(automaton.isCellPopulated(row, col) ? COLOR_POPULATED : COLOR_UNPOPULATED);
+				ctx.fillRect(x, y, cw, ch);
+			}
+		}
 	}
 	
-	private static int getCellWidth(Canvas canvas, CellularAutomaton automaton) {
-		//TODO compute cell width
-		return -1;
+	private static double getCellWidth(Canvas canvas, int cols) {
+		return canvas.getWidth() / cols;
 	}
 	
-	private static int getCellHeight(Canvas canvas, CellularAutomaton automaton) {
-		//TODO compute cell height
-		return -1;
+	private static double getCellHeight(Canvas canvas, int rows) {
+		return canvas.getHeight() / rows;
+	}
+	
+	public static void drawEmptyGrid(Canvas canvas, int rows, int cols) {
+		GraphicsContext ctx = canvas.getGraphicsContext2D();
+		double w = canvas.getWidth();
+		double h = canvas.getHeight();
+		ctx.setFill(COLOR_BACKGROUND);
+		ctx.fillRect(0, 0, w, h);
+		
 	}
 	
 	public static void drawTest(Canvas canvas) {
@@ -36,11 +55,12 @@ public class Drawings {
 			System.err.println("@drawTest -> cannot draw on null canvas");
 			return;
 		}
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-		gc.setFill(new RadialGradient(0, 0, 0.5, 0.5, 0.1, true,
-	               CycleMethod.REFLECT,
-	               new Stop(0.0, Color.BLACK),
-	               new Stop(1.0, Color.WHITE)));
-	    gc.fill();
+		canvas.getGraphicsContext2D().fillText("It works !", 0.0, canvas.getHeight() / 2);;
+	}
+	
+	public static void drawBackground(Canvas canvas) {
+		GraphicsContext ctx = canvas.getGraphicsContext2D();
+		ctx.setFill(COLOR_BACKGROUND);
+		ctx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 	}
 }
