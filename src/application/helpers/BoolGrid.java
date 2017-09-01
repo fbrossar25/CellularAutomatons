@@ -3,7 +3,7 @@ package application.helpers;
 public class BoolGrid{
 	private boolean[][] grid;
 	private int rows, cols;
-	public static final int DEFAULT_SIZE = 3;
+	public static final int DEFAULT_SIZE = 10;
 	
 	public BoolGrid(){
 		this(DEFAULT_SIZE,DEFAULT_SIZE);
