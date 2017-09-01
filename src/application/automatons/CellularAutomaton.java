@@ -8,6 +8,7 @@ public abstract class CellularAutomaton {
 	protected int speed = 1;
 	protected boolean paused = false;
 	protected int generation = 0;
+	protected boolean end = false;
 	
 	public CellularAutomaton() {
 		this(BoolGrid.DEFAULT_SIZE, BoolGrid.DEFAULT_SIZE);
@@ -33,7 +34,13 @@ public abstract class CellularAutomaton {
 		this.generation = 0;
 	}
 	
+	public boolean isEnd() {
+		return this.end;
+	}
+	
 	public void next() {
+		if(end)
+			return;
 		nextStep();
 		this.generation++;
 		this.currentGeneration.initWithOther(this.nextGeneration);
@@ -107,22 +114,21 @@ public abstract class CellularAutomaton {
 	
 	public void randomizeCells() {
 		this.clear();
-		/*
 		for(int row=0; row<rows(); row++) {
 			for(int col=0; col<cols(); col++) {
 				setCurrentGenCell(row,col,Math.random() < 0.5);
 			}
 		}
-		*/
-		setCurrentGenCell(0,1,true);
-		setCurrentGenCell(1,0,true);
-		setCurrentGenCell(1,1,true);
-		setCurrentGenCell(1,2,true);
-		setCurrentGenCell(2,0,true);
+	}
+	
+	protected abstract void endAutomaton();
+	
+	public void end() {
+		this.end = true;
 	}
 	
 	@Override
 	public String toString() {
-		return this.currentGeneration.toString();
+		return this.end ? "Automaton ended at generation "+this.generation : this.currentGeneration.toString();
 	}
 }
