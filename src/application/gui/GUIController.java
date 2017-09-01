@@ -6,6 +6,7 @@ import application.automatons.CellularAutomaton;
 import application.helpers.Drawings;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 
@@ -33,17 +34,18 @@ public class GUIController {
 		speedSlider.valueProperty().addListener((observable,oldValue,newValue)->{
 			speedChanged(newValue.intValue());
 		});
-		
-		//FIXME canvas is null at this point, why ?
-		Drawings.drawTest(canvas);
+		Drawings.drawBackground(canvas);
 	}
 	
 	@FXML
 	public void automatonChanged() {
 		//System.out.println("Automaton changed -> "+automatonChooser.getValue());
 		setAutomaton(automatonChooser.getValue().getInstance());
-		if(automaton != null)
-			System.out.println(automaton);
+		if(automaton == null)
+			return;
+		
+		System.out.println(automaton);
+		Drawings.drawCellularAutomaton(canvas, automaton);
 	}
 	
 	@FXML
@@ -53,6 +55,7 @@ public class GUIController {
 		automaton.next();
 		System.out.println("============= GENERATION "+automaton.getGeneration()+" =============");
 		System.out.println(automaton);
+		Drawings.drawCellularAutomaton(canvas, automaton);
 	}
 	
 	@FXML
