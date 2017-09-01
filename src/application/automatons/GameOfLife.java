@@ -34,4 +34,8 @@ public class GameOfLife extends CellularAutomaton{
 		return neighbors;
 	}
 
+	@Override
+	protected void endAutomaton() {
+		
+	}
 }

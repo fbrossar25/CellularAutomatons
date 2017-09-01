@@ -3,6 +3,7 @@ package application.automatons;
 public class LangtonsAnt extends CellularAutomaton {
 	private int antRow, antCol;
 	private Direction antDir;
+	
 	public static enum Direction{
 		N(-1,0,"N"),
 		E(0,1,"E"),
@@ -77,6 +78,8 @@ public class LangtonsAnt extends CellularAutomaton {
 		setNextGenCell(antRow, antCol, !populated);
 		antRow += antDir.rowDir;
 		antCol += antDir.colDir;
+		if(antRow < 0 || antRow >= rows() || antCol < 0 || antCol >= cols())
+			end();
 	}
 	
 	@Override
@@ -87,4 +90,8 @@ public class LangtonsAnt extends CellularAutomaton {
 		return sb.toString();
 	}
 
+	@Override
+	protected void endAutomaton() {
+		
+	}
 }
