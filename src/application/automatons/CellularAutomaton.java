@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application.events.AutomatonEvent;
-import application.helpers.BoolGrid;
+import application.utils.BoolGrid;
 import javafx.event.Event;
 import javafx.event.EventTarget;
 import javafx.event.EventType;
@@ -19,6 +19,7 @@ public abstract class CellularAutomaton {
     protected AutomatonUpdater  updater;
     public static final int     DEFAULT_SIZE  = 32;
     protected List<EventTarget> evtTargetList = new ArrayList<EventTarget>();
+    protected int               stepsByUpdate = 1;
 
     public CellularAutomaton() {
         this(DEFAULT_SIZE, DEFAULT_SIZE);
@@ -65,11 +66,15 @@ public abstract class CellularAutomaton {
     public void next() {
         if (end)
             return;
-        nextStep();
-        this.generation++;
-        this.currentGeneration.initWithOther(this.nextGeneration);
-        // this.nextGeneration.reset();
-        fireAutomatonEvent(AutomatonEvent.AUTOMATON_STEP);
+        for (int step = 0; step < stepsByUpdate; step++) {
+            nextStep();
+            this.generation++;
+            this.currentGeneration.initWithOther(this.nextGeneration);
+            // this.nextGeneration.reset();
+            fireAutomatonEvent(AutomatonEvent.AUTOMATON_STEP);
+            if (this.isEnd())
+                break;
+        }
     }
 
     protected abstract void nextStep();
@@ -192,12 +197,21 @@ public abstract class CellularAutomaton {
         evtTargetList.clear();
     }
 
+    public void setStepsByUpdate(int value) {
+        if (value < 1 || value > 10)
+            throw new IllegalArgumentException("value must be between 1 and 10");
+        this.stepsByUpdate = value;
+    }
+
+    public int getStepsByUpdate() {
+        return this.stepsByUpdate;
+    }
+
     public abstract Automatons getAutomatonType();
 
     @Override
     public String toString() {
         String s = "============= GENERATION " + this.generation + " =============";
-        return this.end ? "Automaton ended at generation " + this.generation
-                : s + "\n" + this.currentGeneration.toString();
+        return this.end ? "Automaton ended at generation " + this.generation : s + "\n" + this.currentGeneration.toString();
     }
 }
