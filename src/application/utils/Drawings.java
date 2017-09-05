@@ -1,4 +1,4 @@
-package application.helpers;
+package application.utils;
 
 import javafx.scene.paint.Color;
 import application.automatons.CellularAutomaton;

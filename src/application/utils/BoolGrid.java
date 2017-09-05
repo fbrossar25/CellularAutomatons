@@ -1,4 +1,4 @@
-package application.helpers;
+package application.utils;
 
 public class BoolGrid {
     private boolean[][]     grid;
@@ -64,13 +64,22 @@ public class BoolGrid {
 
     public void initWithOther(BoolGrid other) {
         if (other.rows() != this.rows() || other.cols() != this.cols())
-            throw new IllegalArgumentException("BoolGrid dimension not equals : (" + this.rows + "," + this.cols
-                    + ") != " + "(" + other.rows + "," + other.cols + ")");
+            throw new IllegalArgumentException("BoolGrid dimension not equals : (" + this.rows + "," + this.cols + ") != " + "("
+                    + other.rows + "," + other.cols + ")");
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols(); col++) {
                 this.grid[row][col] = other.grid[row][col];
             }
         }
+    }
+
+    public String getRowAsBinaryString(int row) {
+        if (row < 0 || row >= rows())
+            throw new IllegalArgumentException("row must be between 0 and " + (rows() - 1));
+        StringBuilder sb = new StringBuilder("");
+        for (int col = 0; col < cols(); col++)
+            sb.append(get(row, col) ? "1" : "0");
+        return sb.toString();
     }
 
     @Override
@@ -83,5 +92,17 @@ public class BoolGrid {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    public boolean equals(BoolGrid o) {
+        if (rows() != o.rows() || cols() != o.cols())
+            return false;
+        for (int row = 0; row < this.rows; row++) {
+            for (int col = 0; col < this.cols; col++) {
+                if (get(row, col) != o.get(row, col))
+                    return false;
+            }
+        }
+        return true;
     }
 }

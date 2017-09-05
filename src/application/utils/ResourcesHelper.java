@@ -1,4 +1,4 @@
-package application.helpers;
+package application.utils;
 
 import java.net.URL;
 
