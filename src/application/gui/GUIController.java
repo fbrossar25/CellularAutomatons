@@ -119,7 +119,7 @@ public class GUIController {
 
     @FXML
     public void changeSizeButtonPressed() {
-
+        automaton.changeSize(rowsSpinner.getValue().intValue(), colsSpinner.getValue().intValue());
     }
 
     @FXML

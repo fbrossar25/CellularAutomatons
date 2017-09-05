@@ -10,6 +10,7 @@ import javafx.event.EventTarget;
 import javafx.event.EventType;
 
 public abstract class CellularAutomaton {
+    private int                 rows, cols;
     protected BoolGrid          currentGeneration;
     protected BoolGrid          nextGeneration;
     protected int               speed         = 1;
@@ -46,8 +47,8 @@ public abstract class CellularAutomaton {
     protected abstract void init();
 
     public void clear() {
-        this.currentGeneration.reset();
-        this.nextGeneration.reset();
+        this.currentGeneration = new BoolGrid(rows(), cols());
+        this.nextGeneration = new BoolGrid(rows(), cols());
         this.generation = 0;
         this.end = false;
         this.paused = true;
@@ -131,11 +132,11 @@ public abstract class CellularAutomaton {
     }
 
     public int rows() {
-        return this.currentGeneration.rows();
+        return this.rows;
     }
 
     public int cols() {
-        return this.currentGeneration.cols();
+        return this.cols;
     }
 
     public boolean isCellPopulated(int row, int col) {
@@ -205,6 +206,14 @@ public abstract class CellularAutomaton {
 
     public int getStepsByUpdate() {
         return this.stepsByUpdate;
+    }
+
+    public void changeSize(int rows, int cols) {
+        if (rows < 1 || cols < 1)
+            throw new IllegalArgumentException("rows and cols must be >= 1");
+        this.rows = rows;
+        this.cols = cols;
+        reset();
     }
 
     public abstract Automatons getAutomatonType();
