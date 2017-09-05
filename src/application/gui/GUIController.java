@@ -1,15 +1,18 @@
 package application.gui;
 
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import application.automatons.Automatons;
 import application.automatons.CellularAutomaton;
 import application.events.AutomatonEvent;
-import application.helpers.Drawings;
+import application.utils.Drawings;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
 import javafx.scene.layout.BorderPane;
 
 public class GUIController {
@@ -29,6 +32,14 @@ public class GUIController {
     Button                          nextButton;
     @FXML
     Button                          startButton;
+    @FXML
+    ComboBox<Integer>               stepCountsChooser;
+    @FXML
+    Spinner<Integer>                rowsSpinner;
+    @FXML
+    Spinner<Integer>                colsSpinner;
+    @FXML
+    Button                          changeSizeButton;
 
     public GUIController() {
         canvas = new CellularAutomatonCanvas(DEFAULT_CANVAS_SIZE, DEFAULT_CANVAS_SIZE, null);
@@ -37,6 +48,8 @@ public class GUIController {
     @FXML
     public void initialize() {
         automatonChooser.getItems().setAll(Automatons.values());
+        stepCountsChooser.setItems(FXCollections.observableArrayList(Arrays.asList(1, 2, 5, 10)));
+        stepCountsChooser.getSelectionModel().selectFirst();
 
         speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             speedChanged(newValue.intValue());
@@ -65,7 +78,7 @@ public class GUIController {
     }
 
     private void handleAutomatonEnded() {
-        // System.out.println("Automaton ended");
+        System.out.println("Automaton ended at generation " + automaton.getGeneration());
     }
 
     private void handleAutomatonPaused() {
@@ -91,12 +104,22 @@ public class GUIController {
     }
 
     @FXML
+    public void stepCountsChanged() {
+        automaton.setStepsByUpdate(stepCountsChooser.getValue().intValue());
+    }
+
+    @FXML
     public void nextButtonPressed() {
         if (automaton == null)
             return;
         automaton.next();
         // System.out.println(automaton);
         Drawings.drawCellularAutomaton(canvas, automaton);
+    }
+
+    @FXML
+    public void changeSizeButtonPressed() {
+
     }
 
     @FXML
