@@ -18,6 +18,8 @@ public class GameOfLife extends CellularAutomaton {
                 setNextGenCell(row, col, (neighbors == 3 || (populated && neighbors == 2)));
             }
         }
+        if (nextGeneration.equals(currentGeneration))// stable state
+            end();
     }
 
     public int getAliveNeighbors(int row, int col) {
@@ -36,6 +38,7 @@ public class GameOfLife extends CellularAutomaton {
         return neighbors;
     }
 
+    @Override
     public Automatons getAutomatonType() {
         return Automatons.GAME_OF_LIFE;
     }
