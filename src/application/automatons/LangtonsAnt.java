@@ -1,8 +1,14 @@
 package application.automatons;
 
 public class LangtonsAnt extends CellularAutomaton {
-    private int       antRow, antCol;
-    private Direction antDir;
+    private int             antRow, antCol;
+    private Direction       antDir;
+    public static final int DEFAULT_ROWS = 128;
+    public static final int DEFAULT_COLS = 128;
+
+    public LangtonsAnt() {
+        super(DEFAULT_ROWS, DEFAULT_COLS);
+    }
 
     public static enum Direction {
         N(-1, 0, "N"), E(0, 1, "E"), S(1, 0, "S"), W(0, -1, "W");
