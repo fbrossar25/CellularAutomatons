@@ -9,10 +9,12 @@ import application.events.AutomatonEvent;
 import application.utils.Drawings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 
 public class GUIController {
@@ -47,6 +49,12 @@ public class GUIController {
 
     @FXML
     public void initialize() {
+        mainBorderPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            adaptCanvasSize();
+        });
+        mainBorderPane.heightProperty().addListener((observable, oldValue, newValue) -> {
+            adaptCanvasSize();
+        });
         automatonChooser.getItems().setAll(Automatons.values());
         stepCountsChooser.setItems(FXCollections.observableArrayList(Arrays.asList(1, 2, 5, 10)));
         stepCountsChooser.getSelectionModel().selectFirst();
@@ -75,14 +83,27 @@ public class GUIController {
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_STEP, (event) -> handleAutomatonStep());
 
         adaptCanvasSize();
-        // Drawings.drawBackground(canvas);
     }
 
     @FXML
     public void adaptCanvasSize() {
-        // TODO adapt canvas size with computed one
-        canvas.setWidth(DEFAULT_CANVAS_SIZE);
-        canvas.setHeight(DEFAULT_CANVAS_SIZE);
+        Node bottom = mainBorderPane.getBottom();
+        Node top = mainBorderPane.getTop();
+        Node right = mainBorderPane.getRight();
+        Node left = mainBorderPane.getLeft();
+        double maxX = mainBorderPane.getLayoutBounds().getWidth() - (left != null ? left.getLayoutBounds().getWidth() : 0)
+                - (right != null ? right.getLayoutBounds().getWidth() : 0);
+        double maxY = mainBorderPane.getLayoutBounds().getHeight() - (top != null ? top.getLayoutBounds().getHeight() : 0)
+                - (bottom != null ? bottom.getLayoutBounds().getHeight() : 0);
+        double size = Math.max(maxX, maxY);
+        if (maxX <= 0.0 || maxY <= 0.0) {
+            canvas.setWidth(DEFAULT_CANVAS_SIZE);
+            canvas.setHeight(DEFAULT_CANVAS_SIZE);
+        } else {
+            canvas.setWidth(size);
+            canvas.setHeight(size);
+        }
+        canvas.draw();
     }
 
     private void handleAutomatonStarted() {
@@ -180,9 +201,9 @@ public class GUIController {
         canvas.scheduleUpdate();
     }
 
-    @FXML
-    public void canvasClicked() {
+    public void canvasClicked(MouseEvent evt) {
         // TODO switch between alive and dead cells
+        System.out.println("Canvas clicked at (" + evt.getX() + "," + evt.getY() + ")");
     }
 
     public void speedChanged(int value) {
