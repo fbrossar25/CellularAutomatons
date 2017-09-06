@@ -86,7 +86,7 @@ public class GUIController {
     }
 
     private void handleAutomatonStarted() {
-        // System.out.println("Automaton started !");
+        canvas.scheduleUpdate();
     }
 
     private void handleAutomatonEnded() {
@@ -94,15 +94,15 @@ public class GUIController {
     }
 
     private void handleAutomatonPaused() {
-        // System.out.println("Automaton paused");
+        canvas.scheduleUpdate();
     }
 
     private void handleAutomatonReset() {
-        // System.out.println("Automaton reset");
+        canvas.scheduleUpdate();
     }
 
     private void handleAutomatonStep() {
-        // System.out.println("Automaton step");
+        canvas.scheduleUpdate();
     }
 
     @FXML
@@ -119,6 +119,7 @@ public class GUIController {
             colsSpinner.setDisable(false);
         colsSpinner.increment(automaton.cols() - colsSpinner.getValue().intValue());
         rowsSpinner.increment(automaton.rows() - rowsSpinner.getValue().intValue());
+        canvas.scheduleUpdate();
     }
 
     @FXML
@@ -141,6 +142,7 @@ public class GUIController {
             return;
         goPauseState();
         automaton.changeSize(rowsSpinner.getValue().intValue(), colsSpinner.getValue().intValue());
+        canvas.scheduleUpdate();
     }
 
     @FXML
@@ -152,6 +154,7 @@ public class GUIController {
         } else {
             goPauseState();
         }
+        canvas.scheduleUpdate();
     }
 
     public void goPauseState() {
@@ -174,16 +177,12 @@ public class GUIController {
             return;
         goPauseState();
         automaton.reset();
+        canvas.scheduleUpdate();
     }
 
     @FXML
     public void canvasClicked() {
         // TODO switch between alive and dead cells
-    }
-
-    @FXML
-    public void handleResizeCommand() {
-        // TODO resize automaton
     }
 
     public void speedChanged(int value) {

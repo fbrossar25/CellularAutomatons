@@ -14,6 +14,7 @@ public class CellularAutomatonCanvas extends Canvas {
     public static final Color COLOR_UNPOPULATED = Color.GRAY;
     public static final Color COLOR_POPULATED   = Color.YELLOW;
     public static final Color COLOR_BACKGROUND  = Color.BLACK;
+    private boolean           updateScheduled   = true;
 
     public CellularAutomatonCanvas(double width, double height, CellularAutomaton automaton) {
         this(width, height, automaton, true);
@@ -42,10 +43,19 @@ public class CellularAutomatonCanvas extends Canvas {
 
     public void setAutomaton(CellularAutomaton automaton) {
         this.automaton = automaton;
+        scheduleUpdate();
     }
 
     public CellularAutomaton getAutomaton() {
         return this.automaton;
+    }
+
+    public void scheduleUpdate() {
+        updateScheduled = true;
+    }
+
+    public boolean isUpdateScheduled() {
+        return updateScheduled;
     }
 
     private void drawBackground() {
@@ -77,9 +87,12 @@ public class CellularAutomatonCanvas extends Canvas {
     }
 
     public void draw() {
+        if (!updateScheduled)
+            return;
         drawBackground();
         if (automaton != null)
             drawAutomaton();
+        updateScheduled = false;
     }
 
     public double getCellWidth() {
@@ -95,6 +108,5 @@ public class CellularAutomatonCanvas extends Canvas {
         double h = getHeight();
         ctx.setFill(COLOR_BACKGROUND);
         ctx.fillRect(0, 0, w, h);
-
     }
 }
