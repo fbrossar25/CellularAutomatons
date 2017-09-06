@@ -1,5 +1,6 @@
 package application;
 
+import application.gui.ExceptionDialog;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
+        Thread.setDefaultUncaughtExceptionHandler(Main::exceptionHandler);
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             BorderPane root = (BorderPane) FXMLLoader.load(classLoader.getResource("application/gui/GUI.fxml"));
@@ -21,10 +23,22 @@ public class Main extends Application {
             initStage(primaryStage);
             primaryStage.show();
             // this makes all stages close and the app exit when the main stage is closed
-            primaryStage.setOnCloseRequest(e -> Platform.exit());
+            primaryStage.setOnCloseRequest(e -> {
+                Platform.exit();
+                System.exit(0);
+            });
         } catch (Exception e) {
-            e.printStackTrace();
+            new ExceptionDialog(e);
+            Platform.exit();
+            System.exit(-1);
         }
+
+    }
+
+    public static void exceptionHandler(Thread t, Throwable e) {
+        new ExceptionDialog(e);
+        Platform.exit();
+        System.exit(-1);
     }
 
     public void initStage(Stage primaryStage) {
