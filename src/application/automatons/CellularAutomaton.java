@@ -33,6 +33,8 @@ public abstract class CellularAutomaton {
     public CellularAutomaton(int rows, int cols) {
         if (rows < 1 || cols < 1)
             throw new IllegalArgumentException("Invalid dimensions : (" + rows + "," + cols + ")");
+        this.rows = rows;
+        this.cols = cols;
         this.currentGeneration = new BoolGrid(rows, cols);
         this.nextGeneration = new BoolGrid(rows, cols);
         updater = new AutomatonUpdater(this);
@@ -47,7 +49,7 @@ public abstract class CellularAutomaton {
     protected abstract void init();
 
     public void clear() {
-        this.currentGeneration = new BoolGrid(rows(), cols());
+        this.currentGeneration = new BoolGrid(rows(), cols()); // FIXME crash here
         this.nextGeneration = new BoolGrid(rows(), cols());
         this.generation = 0;
         this.end = false;
@@ -165,7 +167,7 @@ public abstract class CellularAutomaton {
     }
 
     public void randomizeCells() {
-        this.clear();
+        this.clear(); // FIXME crash here
         for (int row = 0; row < rows(); row++) {
             for (int col = 0; col < cols(); col++) {
                 setCurrentGenCell(row, col, Math.random() < 0.5);

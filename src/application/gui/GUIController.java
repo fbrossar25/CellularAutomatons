@@ -125,6 +125,7 @@ public class GUIController {
 
     @FXML
     public void changeSizeButtonPressed() {
+        goPauseState();
         automaton.changeSize(rowsSpinner.getValue().intValue(), colsSpinner.getValue().intValue());
     }
 
