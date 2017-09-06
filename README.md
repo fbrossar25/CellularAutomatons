@@ -8,3 +8,4 @@ TODO list :
  - Optimizations (mostly automatons and canvas)
  - Documentation
  - Clean, readable and healthy code
+ - Internationalization
