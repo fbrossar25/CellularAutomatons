@@ -9,13 +9,14 @@ import application.events.AutomatonEvent;
 import application.utils.Drawings;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 public class GUIController {
     public static final double      DEFAULT_CANVAS_SIZE = 400.0;
@@ -42,19 +43,24 @@ public class GUIController {
     Spinner<Integer>                colsSpinner;
     @FXML
     Button                          changeSizeButton;
+    @FXML
+    HBox                            canvasBox;
+    Stage                           primaryStage;
 
     public GUIController() {
         canvas = new CellularAutomatonCanvas(DEFAULT_CANVAS_SIZE, DEFAULT_CANVAS_SIZE, null);
     }
 
+    public void setStage(Stage s) {
+        primaryStage = s;
+    }
+
     @FXML
     public void initialize() {
-        mainBorderPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-            adaptCanvasSize();
+        canvas.setOnMouseClicked((event) -> {
+            canvasClicked(event);
         });
-        mainBorderPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-            adaptCanvasSize();
-        });
+
         automatonChooser.getItems().setAll(Automatons.values());
         stepCountsChooser.setItems(FXCollections.observableArrayList(Arrays.asList(1, 2, 5, 10)));
         stepCountsChooser.getSelectionModel().selectFirst();
@@ -75,35 +81,14 @@ public class GUIController {
             speedChanged(newValue.intValue());
         });
 
-        mainBorderPane.setCenter(canvas);
+        canvasBox.getChildren().add(canvas);
+        canvasBox.setMinHeight(DEFAULT_CANVAS_SIZE);
+        canvasBox.setMinWidth(DEFAULT_CANVAS_SIZE);
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_STARTED, (event) -> handleAutomatonStarted());
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_ENDED, (event) -> handleAutomatonEnded());
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_PAUSED, (event) -> handleAutomatonPaused());
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_RESET, (event) -> handleAutomatonReset());
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_STEP, (event) -> handleAutomatonStep());
-
-        adaptCanvasSize();
-    }
-
-    @FXML
-    public void adaptCanvasSize() {
-        Node bottom = mainBorderPane.getBottom();
-        Node top = mainBorderPane.getTop();
-        Node right = mainBorderPane.getRight();
-        Node left = mainBorderPane.getLeft();
-        double maxX = mainBorderPane.getLayoutBounds().getWidth() - (left != null ? left.getLayoutBounds().getWidth() : 0)
-                - (right != null ? right.getLayoutBounds().getWidth() : 0);
-        double maxY = mainBorderPane.getLayoutBounds().getHeight() - (top != null ? top.getLayoutBounds().getHeight() : 0)
-                - (bottom != null ? bottom.getLayoutBounds().getHeight() : 0);
-        double size = Math.max(maxX, maxY);
-        if (maxX <= 0.0 || maxY <= 0.0) {
-            canvas.setWidth(DEFAULT_CANVAS_SIZE);
-            canvas.setHeight(DEFAULT_CANVAS_SIZE);
-        } else {
-            canvas.setWidth(size);
-            canvas.setHeight(size);
-        }
-        canvas.draw();
     }
 
     private void handleAutomatonStarted() {
@@ -141,6 +126,7 @@ public class GUIController {
         colsSpinner.increment(automaton.cols() - colsSpinner.getValue().intValue());
         rowsSpinner.increment(automaton.rows() - rowsSpinner.getValue().intValue());
         canvas.scheduleUpdate();
+        System.out.print(mainBorderPane.getWidth() + " * " + mainBorderPane.getHeight());
     }
 
     @FXML
