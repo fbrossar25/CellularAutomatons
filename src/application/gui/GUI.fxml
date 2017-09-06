@@ -43,17 +43,9 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  	<Spinner fx:id="rowsSpinner" editable="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-	                  <valueFactory>
-				        <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="10" max="500" min="5" />
-				      </valueFactory>
-			    	</Spinner>
+                  <Spinner fx:id="rowsSpinner" GridPane.halignment="CENTER" GridPane.valignment="CENTER" min="5" max="500" initialValue="5" amountToStepBy="1" />
                   <Label text="x" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                  	<Spinner fx:id="colsSpinner" editable="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-	                  <valueFactory>
-				        <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="10" max="500" min="5" />
-				      </valueFactory>
-			    	</Spinner>
+                  <Spinner fx:id="colsSpinner" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" min="5" max="500" initialValue="5" amountToStepBy="1" />
                </children>
             </GridPane>
             <Label text="Grid dimension :" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
