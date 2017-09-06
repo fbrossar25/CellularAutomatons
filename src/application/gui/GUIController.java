@@ -7,8 +7,11 @@ import application.automatons.Automatons;
 import application.automatons.CellularAutomaton;
 import application.events.AutomatonEvent;
 import application.utils.Drawings;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
@@ -96,7 +99,14 @@ public class GUIController {
     }
 
     private void handleAutomatonEnded() {
-        System.out.println("Automaton ended at generation " + automaton.getGeneration());
+        // Prevents any Timer Thread or non-FX Application thread to modify GUI directly
+        // Exceptions and bugs otherwise
+        Platform.runLater(() -> {
+            canvas.scheduleUpdate();
+            System.out.println("Automaton ended at generation " + automaton.getGeneration());
+            goEndState();
+            alertAutomatonEnded();
+        });
     }
 
     private void handleAutomatonPaused() {
@@ -111,10 +121,16 @@ public class GUIController {
         canvas.scheduleUpdate();
     }
 
+    private void alertAutomatonEnded() {
+        Alert a = new Alert(AlertType.INFORMATION, "Automaton ended successfully at generation " + automaton.getGeneration());
+        a.setHeaderText("Automaton as ended");
+        a.setTitle("Information");
+        a.showAndWait();
+    }
+
     @FXML
     public void automatonChanged() {
         if (automaton != null) {
-            automaton.end();
             automaton.clear();
         }
         goPauseState();
@@ -126,7 +142,6 @@ public class GUIController {
         colsSpinner.increment(automaton.cols() - colsSpinner.getValue().intValue());
         rowsSpinner.increment(automaton.rows() - rowsSpinner.getValue().intValue());
         canvas.scheduleUpdate();
-        System.out.print(mainBorderPane.getWidth() + " * " + mainBorderPane.getHeight());
     }
 
     @FXML
@@ -139,7 +154,6 @@ public class GUIController {
         if (automaton == null)
             return;
         automaton.next();
-        // System.out.println(automaton);
         Drawings.drawCellularAutomaton(canvas, automaton);
     }
 
@@ -169,6 +183,7 @@ public class GUIController {
             automaton.pause();
         nextButton.setDisable(false);
         startButton.setText("Start");
+        startButton.setDisable(false);
     }
 
     public void goStartState() {
@@ -176,6 +191,15 @@ public class GUIController {
             automaton.start();
         nextButton.setDisable(true);
         startButton.setText("Pause");
+        startButton.setDisable(false);
+    }
+
+    public void goEndState() {
+        if (automaton != null)
+            automaton.start();
+        nextButton.setDisable(true);
+        startButton.setText("Start");
+        startButton.setDisable(true);
     }
 
     @FXML
