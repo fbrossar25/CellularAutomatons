@@ -49,8 +49,9 @@ public abstract class CellularAutomaton {
     protected abstract void init();
 
     public void clear() {
-        this.currentGeneration = new BoolGrid(rows(), cols()); // FIXME crash here
+        this.currentGeneration = new BoolGrid(rows(), cols());
         this.nextGeneration = new BoolGrid(rows(), cols());
+        cancelUpdater();
         this.generation = 0;
         this.end = false;
         this.paused = true;
@@ -82,16 +83,21 @@ public abstract class CellularAutomaton {
 
     protected abstract void nextStep();
 
-    public void pause() {
-        if (this.paused)// if already paused
-            return;
-        this.paused = true;
-        fireAutomatonEvent(AutomatonEvent.AUTOMATON_PAUSED);
+    protected void cancelUpdater() {
         try {
             this.updater.cancel();
         } catch (IllegalStateException e) {
             // ignoring e
         }
+    }
+
+    public void pause() {
+        if (this.paused)// if already paused
+            return;
+        this.paused = true;
+        if (!this.end)
+            fireAutomatonEvent(AutomatonEvent.AUTOMATON_PAUSED);
+        cancelUpdater();
     }
 
     public void start() {
@@ -167,7 +173,7 @@ public abstract class CellularAutomaton {
     }
 
     public void randomizeCells() {
-        this.clear(); // FIXME crash here
+        this.clear();
         for (int row = 0; row < rows(); row++) {
             for (int col = 0; col < cols(); col++) {
                 setCurrentGenCell(row, col, Math.random() < 0.5);
@@ -179,11 +185,8 @@ public abstract class CellularAutomaton {
 
     public void end() {
         this.end = true;
-        try {
-            updater.cancel();
-        } catch (IllegalStateException e) {
-            // ignoring e
-        }
+        this.pause();
+        cancelUpdater();
         endAutomaton();
         fireAutomatonEvent(AutomatonEvent.AUTOMATON_ENDED);
     }
