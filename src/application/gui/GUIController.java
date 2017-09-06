@@ -101,6 +101,12 @@ public class GUIController {
         }
         goPauseState();
         setAutomaton(automatonChooser.getValue().getInstance());
+        if (automaton.getAutomatonType() == Automatons.ELEMENTARY)
+            colsSpinner.setDisable(true);
+        else
+            colsSpinner.setDisable(false);
+        colsSpinner.increment(automaton.cols() - colsSpinner.getValue().intValue());
+        rowsSpinner.increment(automaton.rows() - rowsSpinner.getValue().intValue());
     }
 
     @FXML
