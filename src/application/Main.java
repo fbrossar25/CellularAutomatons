@@ -1,11 +1,16 @@
 package application;
 
+import java.util.Optional;
+
 import application.gui.ExceptionDialog;
 import application.gui.GUIController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -27,9 +32,18 @@ public class Main extends Application {
             initStage(primaryStage);
             primaryStage.show();
             // this makes all stages close and the app exit when the main stage is closed
-            primaryStage.setOnCloseRequest(e -> {
-                Platform.exit();
-                System.exit(0);
+            primaryStage.setOnCloseRequest(evt -> {
+                Alert confirmClose = new Alert(AlertType.CONFIRMATION);
+                confirmClose.setTitle("Confirm");
+                confirmClose.setHeaderText("Confirm exit");
+                confirmClose.setContentText("Are you sure you want to exit ?");
+                Optional<ButtonType> closeResponse = confirmClose.showAndWait();
+                if (!ButtonType.OK.equals(closeResponse.get())) {
+                    evt.consume();
+                } else {
+                    Platform.exit();
+                    System.exit(0);
+                }
             });
         } catch (Exception e) {
             new ExceptionDialog(e);
