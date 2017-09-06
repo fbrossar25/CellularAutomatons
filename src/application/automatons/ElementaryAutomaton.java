@@ -49,6 +49,11 @@ public class ElementaryAutomaton extends CellularAutomaton {
     }
 
     @Override
+    public void changeSize(int rows, int cols) {
+        super.changeSize(rows, rows * 2 - 1);
+    }
+
+    @Override
     protected void endAutomaton() {
     }
 
