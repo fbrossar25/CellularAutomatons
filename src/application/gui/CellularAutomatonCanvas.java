@@ -14,6 +14,7 @@ public class CellularAutomatonCanvas extends Canvas {
     public static final Color COLOR_UNPOPULATED = Color.GRAY;
     public static final Color COLOR_POPULATED   = Color.YELLOW;
     public static final Color COLOR_BACKGROUND  = Color.BLACK;
+    public static final Color COLOR_TEST        = Color.GREENYELLOW;
     private boolean           updateScheduled   = true;
 
     public CellularAutomatonCanvas(double width, double height, CellularAutomaton automaton) {
@@ -108,5 +109,10 @@ public class CellularAutomatonCanvas extends Canvas {
         double h = getHeight();
         ctx.setFill(COLOR_BACKGROUND);
         ctx.fillRect(0, 0, w, h);
+    }
+
+    public void test() {
+        ctx.setFill(COLOR_TEST);
+        ctx.fillRect(0, 0, getWidth(), getHeight());
     }
 }
