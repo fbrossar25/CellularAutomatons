@@ -51,6 +51,18 @@ public class GUIController {
         stepCountsChooser.setItems(FXCollections.observableArrayList(Arrays.asList(1, 2, 5, 10)));
         stepCountsChooser.getSelectionModel().selectFirst();
 
+        rowsSpinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) {
+                rowsSpinner.increment(0); // force committing value change on focus loss
+            }
+        });
+
+        colsSpinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) {
+                colsSpinner.increment(0); // force committing value change on focus loss
+            }
+        });
+
         speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             speedChanged(newValue.intValue());
         });
@@ -125,6 +137,8 @@ public class GUIController {
 
     @FXML
     public void changeSizeButtonPressed() {
+        if (automaton == null)
+            return;
         goPauseState();
         automaton.changeSize(rowsSpinner.getValue().intValue(), colsSpinner.getValue().intValue());
     }
