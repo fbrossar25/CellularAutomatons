@@ -1,6 +1,7 @@
 package application;
 
 import application.gui.ExceptionDialog;
+import application.gui.GUIController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +17,10 @@ public class Main extends Application {
         Thread.setDefaultUncaughtExceptionHandler(Main::exceptionHandler);
         try {
             ClassLoader classLoader = getClass().getClassLoader();
-            BorderPane root = (BorderPane) FXMLLoader.load(classLoader.getResource("application/gui/GUI.fxml"));
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(classLoader.getResource("application/gui/GUI.fxml"));
+            BorderPane root = (BorderPane) loader.load();
+            ((GUIController) loader.getController()).setStage(primaryStage);
             Scene scene = new Scene(root);
             scene.getStylesheets().add(classLoader.getResource("application/gui/application.css").toExternalForm());
             primaryStage.setScene(scene);
@@ -42,7 +46,9 @@ public class Main extends Application {
     }
 
     public void initStage(Stage primaryStage) {
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
+        primaryStage.setMinWidth(800);
+        primaryStage.setMinHeight(600);
     }
 
     public static void main(String[] args) {
