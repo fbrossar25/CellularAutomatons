@@ -64,7 +64,7 @@
       </GridPane>
    </bottom>
    <right>
-      <Slider fx:id="speedSlider" max="200.0" maxHeight="Infinity" maxWidth="Infinity" minHeight="400" minWidth="15.0" orientation="VERTICAL" BorderPane.alignment="CENTER">
+      <Slider fx:id="speedSlider" majorTickUnit="1.0" max="200.0" maxHeight="Infinity" maxWidth="Infinity" minHeight="400" minWidth="15.0" minorTickCount="1" orientation="VERTICAL" prefHeight="400.0" prefWidth="15.0" snapToTicks="true" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets right="5.0" />
          </BorderPane.margin></Slider>
