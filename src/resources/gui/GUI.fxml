@@ -30,15 +30,15 @@
             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" onAction="#resetButtonPressed" text="Reset" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-            <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextButtonPressed" text="Next" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-          <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonPressed" text="Start" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-            <Label alignment="CENTER" text="Automaton :" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Button mnemonicParsing="false" onAction="#resetButtonPressed" text="%button.next.text" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextButtonPressed" text="%button.next.text" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+          <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonPressed" text="%button.start.text" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <Label alignment="CENTER" text="%label.automaton.text" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets bottom="5.0" top="5.0" />
                </GridPane.margin></Label>
-            <ComboBox fx:id="automatonChooser" onAction="#automatonChanged" promptText="Choose an automaton" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-            <Label text="Number of steps each update :" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+            <ComboBox fx:id="automatonChooser" onAction="#automatonChanged" promptText="%combo.automaton.prompt" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Label text="%label.steps.text" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <ComboBox fx:id="stepCountsChooser" onAction="#stepCountsChanged" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
             <GridPane GridPane.columnIndex="1" GridPane.rowIndex="2">
               <columnConstraints>
@@ -55,8 +55,9 @@
                   <Spinner fx:id="colsSpinner" amountToStepBy="1" editable="true" initialValue="5" max="500" min="5" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                </children>
             </GridPane>
-            <Label text="Grid dimension :" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-            <Button fx:id="changeSizeButton" mnemonicParsing="false" onAction="#changeSizeButtonPressed" text="Change size" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+            <Label text="%label.dimension.text" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+            <Button fx:id="changeSizeButton" mnemonicParsing="false" onAction="#changeSizeButtonPressed" text="%button.size.text" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+            <Label fx:id="generationLabel" text="%label.generation.text" GridPane.columnIndex="2" GridPane.rowIndex="1" />
          </children>
          <BorderPane.margin>
             <Insets bottom="5.0" top="5.0" />
@@ -72,19 +73,19 @@
    <top>
       <MenuBar maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="false" text="%menu.file.text">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem mnemonicParsing="false" text="%item.close.text" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
+          <Menu mnemonicParsing="false" text="%menu.edit.text">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+                  <Menu fx:id="languageMenu" mnemonicParsing="false" text="%menu.language.text" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Help">
+          <Menu mnemonicParsing="false" text="%menu.edit.text">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" text="%item.about.text" />
             </items>
           </Menu>
         </menus>
