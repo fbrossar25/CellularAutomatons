@@ -3,6 +3,7 @@ package application.gui;
 import application.automatons.CellularAutomaton;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -11,11 +12,14 @@ public class CellularAutomatonCanvas extends Canvas {
     private CanvasUpdateTimer timer;
     private boolean           autoRedraw;
     private GraphicsContext   ctx;
-    public static final Color COLOR_UNPOPULATED = Color.GRAY;
-    public static final Color COLOR_POPULATED   = Color.YELLOW;
-    public static final Color COLOR_BACKGROUND  = Color.BLACK;
-    public static final Color COLOR_TEST        = Color.GREENYELLOW;
-    private boolean           updateScheduled   = true;
+    public static final Color COLOR_UNPOPULATED           = Color.GRAY;
+    public static final Color COLOR_POPULATED             = Color.YELLOW;
+    public static final Color COLOR_BACKGROUND            = Color.BLACK;
+    public static final Color COLOR_TEST                  = Color.GREENYELLOW;
+    public static final Color COLOR_HIGHLIGHT_POPULATED   = Color.RED;
+    public static final Color COLOR_HIGHLIGHT_UNPOPULATED = Color.GREEN;
+    private boolean           updateScheduled             = true;
+    private int               highlightRow                = -1, highlightCol = -1;
 
     public CellularAutomatonCanvas(double width, double height, CellularAutomaton automaton) {
         this(width, height, automaton, true);
@@ -27,10 +31,21 @@ public class CellularAutomatonCanvas extends Canvas {
         timer = new CanvasUpdateTimer(this);
         setAutoRedraw(autoRedraw);
         ctx = getGraphicsContext2D();
+        setOnMouseClicked((evt) -> {
+            handleMouseClicked(evt);
+        });
+        setOnMouseMoved((evt) -> {
+            handleMouseMoved(evt);
+        });
+        setOnMouseExited((evt) -> {
+            highlightRow = -1;
+            highlightCol = -1;
+            scheduleUpdate();
+        });
     }
 
     public boolean isAutoRedraw() {
-        return this.autoRedraw;
+        return autoRedraw;
     }
 
     public void setAutoRedraw(boolean autoRedraw) {
@@ -48,7 +63,7 @@ public class CellularAutomatonCanvas extends Canvas {
     }
 
     public CellularAutomaton getAutomaton() {
-        return this.automaton;
+        return automaton;
     }
 
     public void scheduleUpdate() {
@@ -100,9 +115,9 @@ public class CellularAutomatonCanvas extends Canvas {
         for (int row = 0; row < automaton.rows(); row++) {
             for (int col = 0; col < automaton.cols(); col++) {
                 if (automaton.isCellPopulated(row, col)) {
-                    ctx.setFill(COLOR_POPULATED);
+                    ctx.setFill((row == highlightRow && col == highlightCol) ? COLOR_HIGHLIGHT_POPULATED : COLOR_POPULATED);
                 } else {
-                    ctx.setFill(COLOR_UNPOPULATED);
+                    ctx.setFill((row == highlightRow && col == highlightCol) ? COLOR_HIGHLIGHT_UNPOPULATED : COLOR_UNPOPULATED);
                 }
                 ctx.fillRect(col * cellWidth, row * cellHeight, (col + 1) * cellWidth, (row + 1) * cellHeight);
             }
@@ -122,9 +137,11 @@ public class CellularAutomatonCanvas extends Canvas {
                 ctx.strokeLine(0, i * cellHeight, width, i * cellHeight);
             }
         }
+
         updateScheduled = false;
     }
 
+    @Deprecated
     public void oldDraw() {
         if (!updateScheduled)
             return;
@@ -170,5 +187,42 @@ public class CellularAutomatonCanvas extends Canvas {
             return 0.5;
         else
             return 0.0;
+    }
+
+    public int getColForX(double xPos) {
+        return (int) (xPos / getCellWidth());
+    }
+
+    public int getRowForY(double yPos) {
+        return (int) (yPos / getCellHeight());
+    }
+
+    public void handleMouseClicked(MouseEvent evt) {
+        if (automaton == null || !automaton.isPaused() || automaton.isEnd())
+            return;
+        int row = getRowForY(evt.getY());
+        if (row < 0 || row > automaton.rows())
+            return;
+        int col = getColForX(evt.getX());
+        if (col < 0 || col > automaton.cols())
+            return;
+        automaton.setCurrentGenCell(row, col, !automaton.isCellPopulated(row, col));
+        scheduleUpdate();
+    }
+
+    public void handleMouseMoved(MouseEvent evt) {
+        if (automaton == null || !automaton.isPaused() || automaton.isEnd())
+            return;
+        int row = getRowForY(evt.getY());
+        if (row < 0 || row > automaton.rows())
+            return;
+        int col = getColForX(evt.getX());
+        if (col < 0 || col > automaton.cols())
+            return;
+        if (row != highlightRow || col != highlightCol) {
+            highlightRow = row;
+            highlightCol = col;
+            scheduleUpdate();
+        }
     }
 }
