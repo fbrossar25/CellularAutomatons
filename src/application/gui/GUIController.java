@@ -1,54 +1,67 @@
 package application.gui;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
+import application.Main;
 import application.automatons.Automatons;
 import application.automatons.CellularAutomaton;
 import application.events.AutomatonEvent;
+import application.i18n.LanguageMenuItem;
 import application.utils.Drawings;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+
+//TODO Dynamic locale changes
 
 public class GUIController {
     public static final double      DEFAULT_CANVAS_SIZE = 400.0;
     private CellularAutomaton       automaton;
     private CellularAutomatonCanvas canvas;
+    private ResourceBundle          resourcesBundle;
+    private Locale                  currentLocale;
+    private Stage                   primaryStage;
+    private FXMLLoader              loader;
 
     @FXML
-    Slider                          speedSlider;
+    private Slider                  speedSlider;
     @FXML
-    ResourceBundle                  resourcesBundle;
+    private BorderPane              mainBorderPane;
     @FXML
-    BorderPane                      mainBorderPane;
+    private ComboBox<Automatons>    automatonChooser;
     @FXML
-    ComboBox<Automatons>            automatonChooser;
+    private Button                  nextButton;
     @FXML
-    Button                          nextButton;
+    private Button                  startButton;
     @FXML
-    Button                          startButton;
+    private ComboBox<Integer>       stepCountsChooser;
     @FXML
-    ComboBox<Integer>               stepCountsChooser;
+    private Spinner<Integer>        rowsSpinner;
     @FXML
-    Spinner<Integer>                rowsSpinner;
+    private Spinner<Integer>        colsSpinner;
     @FXML
-    Spinner<Integer>                colsSpinner;
+    private Button                  changeSizeButton;
     @FXML
-    Button                          changeSizeButton;
+    private HBox                    canvasBox;
     @FXML
-    HBox                            canvasBox;
-    Stage                           primaryStage;
+    private Menu                    languageMenu;
+    @FXML
+    private Label                   generationLabel;
 
     public GUIController() {
         canvas = new CellularAutomatonCanvas(DEFAULT_CANVAS_SIZE, DEFAULT_CANVAS_SIZE, null);
@@ -60,10 +73,6 @@ public class GUIController {
 
     @FXML
     public void initialize() {
-        canvas.setOnMouseClicked((event) -> {
-            canvasClicked(event);
-        });
-
         automatonChooser.getItems().setAll(Automatons.values());
         stepCountsChooser.setItems(FXCollections.observableArrayList(Arrays.asList(1, 2, 5, 10)));
         stepCountsChooser.getSelectionModel().selectFirst();
@@ -92,6 +101,27 @@ public class GUIController {
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_PAUSED, (event) -> handleAutomatonPaused());
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_RESET, (event) -> handleAutomatonReset());
         mainBorderPane.addEventHandler(AutomatonEvent.AUTOMATON_STEP, (event) -> handleAutomatonStep());
+
+        for (Locale l : Main.supportedLocales) {
+            MenuItem item = new LanguageMenuItem(l, this);
+            languageMenu.getItems().add(item);
+        }
+
+        initDynamicI18NBindings();
+    }
+
+    public void initDynamicI18NBindings() {
+        // TODO create bindings for each i18n text
+    }
+
+    public void setLoader(FXMLLoader loader) {
+        this.loader = loader;
+    }
+
+    public void setResourceBundle(ResourceBundle rb) {
+        // System.out.println("switching to " + rb.getLocale().getDisplayLanguage());
+        resourcesBundle = rb;
+        loader.setResources(rb);
     }
 
     private void handleAutomatonStarted() {
@@ -103,7 +133,6 @@ public class GUIController {
         // Exceptions and bugs otherwise
         Platform.runLater(() -> {
             canvas.scheduleUpdate();
-            System.out.println("Automaton ended at generation " + automaton.getGeneration());
             goEndState();
             alertAutomatonEnded();
         });
@@ -115,10 +144,16 @@ public class GUIController {
 
     private void handleAutomatonReset() {
         canvas.scheduleUpdate();
+        Platform.runLater(() -> {
+            generationLabel.setText(resourcesBundle.getString("label.generation.text") + automaton.getGeneration());
+        });
     }
 
     private void handleAutomatonStep() {
         canvas.scheduleUpdate();
+        Platform.runLater(() -> {
+            generationLabel.setText(resourcesBundle.getString("label.generation.text") + automaton.getGeneration());
+        });
     }
 
     private void alertAutomatonEnded() {
@@ -211,11 +246,6 @@ public class GUIController {
         canvas.scheduleUpdate();
     }
 
-    public void canvasClicked(MouseEvent evt) {
-        // TODO switch between alive and dead cells
-        System.out.println("Canvas clicked at (" + evt.getX() + "," + evt.getY() + ")");
-    }
-
     public void speedChanged(int value) {
         // System.out.println("Speed -> "+value);
         if (automaton == null)
@@ -224,15 +254,27 @@ public class GUIController {
     }
 
     public void setAutomaton(CellularAutomaton newAutomaton) {
-        if (this.automaton != null)
-            this.automaton.removeAllEventTargets();
+        if (automaton != null)
+            automaton.removeAllEventTargets();
 
-        this.automaton = newAutomaton;
+        automaton = newAutomaton;
 
-        if (this.automaton != null) {
-            this.automaton.addEventTarget(mainBorderPane);
+        if (automaton != null) {
+            automaton.addEventTarget(mainBorderPane);
             automaton.setSpeed(speedSlider.valueProperty().intValue());
         }
-        canvas.setAutomaton(this.automaton);
+        canvas.setAutomaton(automaton);
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourcesBundle;
+    }
+
+    public void setLocale(Locale locale) {
+        currentLocale = locale;
+    }
+
+    public Locale getLocale() {
+        return currentLocale;
     }
 }

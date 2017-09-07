@@ -1,6 +1,11 @@
 package application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import application.gui.ExceptionDialog;
 import application.gui.GUIController;
@@ -17,17 +22,33 @@ import javafx.stage.Stage;
 //TODO Documentation
 
 public class Main extends Application {
+    public static final List<Locale> supportedLocales = new ArrayList<>(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
+    public static final Locale       fallBackLocale   = Locale.ENGLISH;
+
+    public boolean isSupportedLocale(Locale locale) {
+        for (Locale l : supportedLocales) {
+            if (l.getLanguage().equals(locale.getLanguage()))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public void start(Stage primaryStage) {
         Thread.setDefaultUncaughtExceptionHandler(Main::exceptionHandler);
         try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(classLoader.getResource("application/gui/GUI.fxml"));
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            System.out.println(Locale.getDefault().toString());
+            Locale locale = isSupportedLocale(Locale.getDefault()) ? Locale.getDefault() : fallBackLocale;
+            FXMLLoader loader = new FXMLLoader(classLoader.getResource("resources/gui/GUI.fxml"),
+                    ResourceBundle.getBundle("resources.i18n.Locale", locale));
             BorderPane root = (BorderPane) loader.load();
-            ((GUIController) loader.getController()).setStage(primaryStage);
+            GUIController controller = (GUIController) loader.getController();
+            controller.setStage(primaryStage);
+            controller.setLoader(loader);
+            controller.setResourceBundle(loader.getResources());
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(classLoader.getResource("application/gui/application.css").toExternalForm());
+            scene.getStylesheets().add(classLoader.getResource("resources/gui/application.css").toExternalForm());
             primaryStage.setScene(scene);
             initStage(primaryStage);
             primaryStage.show();
@@ -60,9 +81,11 @@ public class Main extends Application {
     }
 
     public void initStage(Stage primaryStage) {
+        String version = this.getClass().getPackage().getImplementationVersion();
         primaryStage.setResizable(true);
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
+        primaryStage.setTitle("Cellular Automatons" + ((version == null) ? "" : (" " + version)));
     }
 
     public static void main(String[] args) {
