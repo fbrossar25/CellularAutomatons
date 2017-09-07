@@ -35,8 +35,8 @@ public abstract class CellularAutomaton {
             throw new IllegalArgumentException("Invalid dimensions : (" + rows + "," + cols + ")");
         this.rows = rows;
         this.cols = cols;
-        this.currentGeneration = new BoolGrid(rows, cols);
-        this.nextGeneration = new BoolGrid(rows, cols);
+        currentGeneration = new BoolGrid(rows, cols);
+        nextGeneration = new BoolGrid(rows, cols);
         updater = new AutomatonUpdater(this);
         init();
     }
@@ -49,12 +49,12 @@ public abstract class CellularAutomaton {
     protected abstract void init();
 
     public void clear() {
-        this.currentGeneration = new BoolGrid(rows(), cols());
-        this.nextGeneration = new BoolGrid(rows(), cols());
+        currentGeneration = new BoolGrid(rows(), cols());
+        nextGeneration = new BoolGrid(rows(), cols());
         cancelUpdater();
-        this.generation = 0;
-        this.end = false;
-        this.paused = true;
+        generation = 0;
+        end = false;
+        paused = true;
     }
 
     public void reset() {
@@ -64,7 +64,7 @@ public abstract class CellularAutomaton {
     }
 
     public boolean isEnd() {
-        return this.end;
+        return end;
     }
 
     public void next() {
@@ -72,11 +72,11 @@ public abstract class CellularAutomaton {
             return;
         for (int step = 0; step < stepsByUpdate; step++) {
             nextStep();
-            this.generation++;
-            this.currentGeneration.initWithOther(this.nextGeneration);
+            generation++;
+            currentGeneration.initWithOther(nextGeneration);
             // this.nextGeneration.reset();
             fireAutomatonEvent(AutomatonEvent.AUTOMATON_STEP);
-            if (this.isEnd())
+            if (isEnd())
                 break;
         }
     }
@@ -85,35 +85,35 @@ public abstract class CellularAutomaton {
 
     protected void cancelUpdater() {
         try {
-            this.updater.cancel();
+            updater.cancel();
         } catch (IllegalStateException e) {
             // ignoring e
         }
     }
 
     public void pause() {
-        if (this.paused)// if already paused
+        if (paused)// if already paused
             return;
-        this.paused = true;
-        if (!this.end)
+        paused = true;
+        if (!end)
             fireAutomatonEvent(AutomatonEvent.AUTOMATON_PAUSED);
         cancelUpdater();
     }
 
     public void start() {
-        if (!this.paused)// if already started
+        if (!paused)// if already started
             return;
-        this.paused = false;
+        paused = false;
         rescheduleUpdater();
         fireAutomatonEvent(AutomatonEvent.AUTOMATON_STARTED);
     }
 
     public boolean isPaused() {
-        return this.paused;
+        return paused;
     }
 
     public int getSpeed() {
-        return this.speed;
+        return speed;
     }
 
     public void rescheduleUpdater() {
@@ -127,30 +127,30 @@ public abstract class CellularAutomaton {
 
     public void setSpeed(int value) {
         if (value <= 0) {
-            this.speed = 1;
+            speed = 1;
         } else {
-            this.speed = value;
-            if (!this.paused)
+            speed = value;
+            if (!paused)
                 rescheduleUpdater();
         }
     }
 
     public int getGeneration() {
-        return this.generation;
+        return generation;
     }
 
     public int rows() {
-        return this.rows;
+        return rows;
     }
 
     public int cols() {
-        return this.cols;
+        return cols;
     }
 
     public boolean isCellPopulated(int row, int col) {
         boolean b;
         try {
-            b = this.currentGeneration.get(row, col);
+            b = currentGeneration.get(row, col);
         } catch (IndexOutOfBoundsException e) {
             // ignoring e
             b = false;
@@ -165,15 +165,15 @@ public abstract class CellularAutomaton {
     }
 
     public void setCurrentGenCell(int row, int col, boolean alive) throws IndexOutOfBoundsException {
-        setCell(this.currentGeneration, row, col, alive);
+        setCell(currentGeneration, row, col, alive);
     }
 
     public void setNextGenCell(int row, int col, boolean alive) throws IndexOutOfBoundsException {
-        setCell(this.nextGeneration, row, col, alive);
+        setCell(nextGeneration, row, col, alive);
     }
 
     public void randomizeCells() {
-        this.clear();
+        clear();
         for (int row = 0; row < rows(); row++) {
             for (int col = 0; col < cols(); col++) {
                 setCurrentGenCell(row, col, Math.random() < 0.5);
@@ -184,11 +184,11 @@ public abstract class CellularAutomaton {
     protected abstract void endAutomaton();
 
     public void end() {
-        this.end = true;
-        this.pause();
+        end = true;
+        pause();
         cancelUpdater();
         endAutomaton();
-        fireAutomatonEvent(AutomatonEvent.AUTOMATON_ENDED);
+        fireAutomatonEvent(AutomatonEvent.AUTOMATON_ENDED); // FIXME fired sometimes when not desired (synchronization stuff related ?)
     }
 
     public void addEventTarget(EventTarget target) {
@@ -206,11 +206,11 @@ public abstract class CellularAutomaton {
     public void setStepsByUpdate(int value) {
         if (value < 1 || value > 10)
             throw new IllegalArgumentException("value must be between 1 and 10");
-        this.stepsByUpdate = value;
+        stepsByUpdate = value;
     }
 
     public int getStepsByUpdate() {
-        return this.stepsByUpdate;
+        return stepsByUpdate;
     }
 
     public void changeSize(int rows, int cols) {
@@ -225,7 +225,7 @@ public abstract class CellularAutomaton {
 
     @Override
     public String toString() {
-        String s = "============= GENERATION " + this.generation + " =============";
-        return this.end ? "Automaton ended at generation " + this.generation : s + "\n" + this.currentGeneration.toString();
+        String s = "============= GENERATION " + generation + " =============";
+        return end ? "Automaton ended at generation " + generation : s + "\n" + currentGeneration.toString();
     }
 }
