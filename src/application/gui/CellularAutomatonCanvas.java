@@ -88,6 +88,44 @@ public class CellularAutomatonCanvas extends Canvas {
     }
 
     public void draw() {
+        if (!updateScheduled || automaton == null)
+            return;
+        double cellWidth = getCellWidth();
+        double cellHeight = getCellHeight();
+        double width = getWidth();
+        double height = getHeight();
+        double lineWidth = getLineWidth();
+        double lineHeight = getLineHeight();
+        ctx.clearRect(0.0, 0.0, width, height);
+        for (int row = 0; row < automaton.rows(); row++) {
+            for (int col = 0; col < automaton.cols(); col++) {
+                if (automaton.isCellPopulated(row, col)) {
+                    ctx.setFill(COLOR_POPULATED);
+                } else {
+                    ctx.setFill(COLOR_UNPOPULATED);
+                }
+                ctx.fillRect(col * cellWidth, row * cellHeight, (col + 1) * cellWidth, (row + 1) * cellHeight);
+            }
+        }
+
+        ctx.setFill(COLOR_BACKGROUND);
+        if (lineWidth > 0.0) {
+            ctx.setLineWidth(getLineWidth());
+            for (int i = 1; i < automaton.cols(); i++) {
+                ctx.strokeLine(i * cellWidth, 0, i * cellWidth, height);
+            }
+        }
+
+        if (lineHeight > 0.0) {
+            ctx.setLineWidth(getLineHeight());
+            for (int i = 1; i < automaton.rows(); i++) {
+                ctx.strokeLine(0, i * cellHeight, width, i * cellHeight);
+            }
+        }
+        updateScheduled = false;
+    }
+
+    public void oldDraw() {
         if (!updateScheduled)
             return;
         drawBackground();
@@ -114,5 +152,23 @@ public class CellularAutomatonCanvas extends Canvas {
     public void test() {
         ctx.setFill(COLOR_TEST);
         ctx.fillRect(0, 0, getWidth(), getHeight());
+    }
+
+    public double getLineWidth() {
+        if (automaton.rows() < 100)
+            return 1.0;
+        else if (automaton.rows() < 250)
+            return 0.5;
+        else
+            return 0.0;
+    }
+
+    public double getLineHeight() {
+        if (automaton.cols() < 100)
+            return 1.0;
+        else if (automaton.cols() < 250)
+            return 0.5;
+        else
+            return 0.0;
     }
 }
