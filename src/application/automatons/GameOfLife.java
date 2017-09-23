@@ -1,5 +1,7 @@
 package application.automatons;
 
+import java.util.stream.IntStream;
+
 public class GameOfLife extends CellularAutomaton {
 
     @Override
@@ -9,7 +11,7 @@ public class GameOfLife extends CellularAutomaton {
 
     @Override
     public void nextStep() {
-        for (int row = 0; row < rows(); row++) {
+        IntStream.range(0, rows()).parallel().forEach(row -> {
             for (int col = 0; col < cols(); col++) {
                 int neighbors = getAliveNeighbors(row, col);
                 boolean populated = isCellPopulated(row, col);
@@ -17,7 +19,7 @@ public class GameOfLife extends CellularAutomaton {
                 // "O" : "X"));
                 setNextGenCell(row, col, (neighbors == 3 || (populated && neighbors == 2)));
             }
-        }
+        });
         if (nextGeneration.equals(currentGeneration))// stable state
             end();
     }
