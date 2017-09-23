@@ -83,6 +83,7 @@ public class CellularAutomatonCanvas extends Canvas {
         ctx.setFill(previousPaint);
     }
 
+    @Deprecated
     private void drawAutomaton() {
         if (automaton == null)
             return;
