@@ -3,6 +3,8 @@ package application.gui;
 import application.automatons.CellularAutomaton;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -113,17 +115,27 @@ public class CellularAutomatonCanvas extends Canvas {
         double lineWidth = getLineWidth();
         double lineHeight = getLineHeight();
         ctx.clearRect(0.0, 0.0, width, height);
+        int W = (int) width, H = (int) height;
+        WritableImage img = new WritableImage(W, H);
+        PixelWriter pw = img.getPixelWriter();
+        Color c;
         for (int row = 0; row < automaton.rows(); row++) {
             for (int col = 0; col < automaton.cols(); col++) {
                 if (automaton.isCellPopulated(row, col)) {
-                    ctx.setFill((row == highlightRow && col == highlightCol) ? COLOR_HIGHLIGHT_POPULATED : COLOR_POPULATED);
+                    c = (row == highlightRow && col == highlightCol) ? COLOR_HIGHLIGHT_POPULATED : COLOR_POPULATED;
                 } else {
-                    ctx.setFill((row == highlightRow && col == highlightCol) ? COLOR_HIGHLIGHT_UNPOPULATED : COLOR_UNPOPULATED);
+                    c = (row == highlightRow && col == highlightCol) ? COLOR_HIGHLIGHT_UNPOPULATED : COLOR_UNPOPULATED;
                 }
-                ctx.fillRect(col * cellWidth, row * cellHeight, (col + 1) * cellWidth, (row + 1) * cellHeight);
+                int xBegin = (int) (col * cellWidth), xEnd = (int) ((col + 1) * cellWidth);
+                int yBegin = (int) (row * cellHeight), yEnd = (int) ((row + 1) * cellHeight);
+                for (int x = xBegin; x < xEnd; x++) {
+                    for (int y = yBegin; y < yEnd; y++) {
+                        pw.setColor(x, y, c);
+                    }
+                }
             }
         }
-
+        ctx.drawImage(img, 0.0, 0.0);
         ctx.setFill(COLOR_BACKGROUND);
         if (lineWidth > 0.0) {
             ctx.setLineWidth(getLineWidth());
