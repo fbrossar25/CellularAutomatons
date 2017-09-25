@@ -196,7 +196,7 @@ public class CellularAutomatonCanvas extends Canvas {
     public double getLineHeight() {
         if (automaton.cols() < 100)
             return 1.0;
-        else if (automaton.cols() < 250)
+        else if (automaton.cols() < 200)
             return 0.5;
         else
             return 0.0;
