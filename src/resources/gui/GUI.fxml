@@ -30,7 +30,7 @@
             <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" onAction="#resetButtonPressed" text="%button.next.text" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+            <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetButtonPressed" text="%button.reset.text" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextButtonPressed" text="%button.next.text" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
           <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonPressed" text="%button.start.text" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Label alignment="CENTER" text="%label.automaton.text" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
@@ -83,7 +83,7 @@
                   <Menu fx:id="languageMenu" mnemonicParsing="false" text="%menu.language.text" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="%menu.edit.text">
+          <Menu mnemonicParsing="false" text="%menu.help.text">
             <items>
               <MenuItem mnemonicParsing="false" text="%item.about.text" />
             </items>

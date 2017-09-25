@@ -49,6 +49,8 @@ public class GUIController {
     @FXML
     private Button                  startButton;
     @FXML
+    private Button                  resetButton;
+    @FXML
     private ComboBox<Integer>       stepCountsChooser;
     @FXML
     private Spinner<Integer>        rowsSpinner;
