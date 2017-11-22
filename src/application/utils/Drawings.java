@@ -1,6 +1,9 @@
 package application.utils;
 
 import javafx.scene.paint.Color;
+
+import java.util.stream.IntStream;
+
 import application.automatons.CellularAutomaton;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -13,21 +16,20 @@ public class Drawings {
     public static void drawCellularAutomaton(Canvas canvas, CellularAutomaton automaton) {
         if (canvas == null || automaton == null)
             return;
-        double x, y;
         double cw = getCellWidth(canvas, automaton.cols());
         double ch = getCellHeight(canvas, automaton.rows());
         int rows = automaton.rows();
         int cols = automaton.cols();
         drawBackground(canvas);
         GraphicsContext ctx = canvas.getGraphicsContext2D();
-        for (int row = 0; row < rows; row++) {
-            y = row * ch;
+        IntStream.range(0, rows).parallel().forEach(row -> {
+        	double y = row * ch;
             for (int col = 0; col < cols; col++) {
-                x = col * cw;
+                double x = col * cw;
                 ctx.setFill(automaton.isCellPopulated(row, col) ? COLOR_POPULATED : COLOR_UNPOPULATED);
                 ctx.fillRect(x, y, cw, ch);
             }
-        }
+        });
     }
 
     private static double getCellWidth(Canvas canvas, int cols) {
@@ -53,7 +55,6 @@ public class Drawings {
             return;
         }
         canvas.getGraphicsContext2D().fillText("It works !", 0.0, canvas.getHeight() / 2);
-        ;
     }
 
     public static void drawBackground(Canvas canvas) {

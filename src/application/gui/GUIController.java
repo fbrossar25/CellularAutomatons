@@ -35,7 +35,8 @@ public class GUIController {
     private CellularAutomatonCanvas canvas;
     private ResourceBundle          resourcesBundle;
     private Locale                  currentLocale;
-    private Stage                   primaryStage;
+    @SuppressWarnings("unused")
+	private Stage                   primaryStage;
     private FXMLLoader              loader;
 
     @FXML
